@@ -415,8 +415,8 @@ footer .legal{flex-basis:100%;font-size:13px;color:var(--faint)}
   </div>
   <div class="ticker" aria-label="What Dahlia handles">
    <ul>
-    <li>Calls up to 10 places at once</li><li>Navigates phone menus</li><li>Waits on hold for you</li><li>Finds places with live web search</li><li>Books within the limits you set</li><li>Remembers promised callbacks</li><li>Asks you before money moves</li><li>Says it’s an AI on every call</li>
-    <li aria-hidden="true">Calls up to 10 places at once</li><li aria-hidden="true">Navigates phone menus</li><li aria-hidden="true">Waits on hold for you</li><li aria-hidden="true">Finds places with live web search</li><li aria-hidden="true">Books within the limits you set</li><li aria-hidden="true">Remembers promised callbacks</li><li aria-hidden="true">Asks you before money moves</li><li aria-hidden="true">Says it’s an AI on every call</li>
+    <li>Calls up to 10 places at once</li><li>Navigates phone menus</li><li>Waits on hold for you</li><li>Finds places with live web search</li><li>Books within the limits you set</li><li>Remembers promised callbacks</li><li>Asks you before money moves</li><li>Takes no for an answer</li>
+    <li aria-hidden="true">Calls up to 10 places at once</li><li aria-hidden="true">Navigates phone menus</li><li aria-hidden="true">Waits on hold for you</li><li aria-hidden="true">Finds places with live web search</li><li aria-hidden="true">Books within the limits you set</li><li aria-hidden="true">Remembers promised callbacks</li><li aria-hidden="true">Asks you before money moves</li><li aria-hidden="true">Takes no for an answer</li>
    </ul>
   </div>
  </section>
@@ -426,7 +426,7 @@ footer .legal{flex-basis:100%;font-size:13px;color:var(--faint)}
    <div class="section-head">
     <span class="eyebrow">Safe by design</span>
     <h2 id="control-title">An assistant that calls for you, <span class="serif">never instead of you.</span></h2>
-    <p>Dahlia only calls the places you choose, only after you confirm, and says it’s an AI from the first hello. Every call is yours to follow, steer and take over.</p>
+    <p>Dahlia only calls the places you choose, and only after you confirm. Every call is yours to follow, steer and take over.</p>
    </div>
    <div class="control-grid">
     <div class="player" id="player" aria-label="A sample call you can control">
@@ -438,7 +438,7 @@ footer .legal{flex-basis:100%;font-size:13px;color:var(--faint)}
      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2M21 12h0"/></svg></span><h3>Listen live</h3><p>Every word appears as it’s said, so you always know exactly where things stand.</p></li>
      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span><h3>Jump in anytime</h3><p>Tap Jump in and Dahlia rings your phone. Press 1 and you’re talking; Dahlia steps back.</p></li>
      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="3"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><h3>Nothing without your OK</h3><p>Deposits, payments and changes wait for your tap. No one on the line can approve them for you.</p></li>
-     <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Honest from hello</h3><p>Dahlia says it’s an AI assistant and that the call is transcribed. It takes no for an answer and never calls back anyone who asks it not to.</p></li>
+     <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><h3>Polite on every call</h3><p>Dahlia is courteous, takes no for an answer, and never calls back anyone who asks it not to.</p></li>
      <li class="never"><img src="assets/dahlia-mark.svg" alt=""><span><strong>Never a robocall.</strong> Dahlia makes one call per place you choose, for your request, and hangs up politely when it’s done.</span></li>
     </ul>
    </div>
@@ -513,7 +513,7 @@ paintHeader();
 var SPEED=12,CX=560,CY=262,RX=430,RY=226;
 var SCENES={
  dinner:{working:'Calling 10 restaurants',
-  ask:'Hi, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed. Do you have a table for six tonight, around 8?',
+  ask:'Hi, I’m Rosa’s assistant. Do you have a table for six tonight, around 8?',
   thanks:'Thank you so much. I’ll let Rosa know.',
   nodes:[['Osteria Nove','yes','8:00 for six','We can do 8 o’clock for six, inside.'],['Lupa Rossa','needs','8:15 · $50 hold?','We have 8:15, but parties of six need a $50 card hold.'],['Bar Giulia','no','Full tonight','Sorry, we’re fully booked tonight.'],['Casa Sole','yes','8:30 for six','Earliest for six is 8:30.'],['Il Forno','none','No answer',''],['Trattoria Vela','no','Bar seats only','Only bar seats after 9, I’m afraid.'],['Cotta','yes','7:45 on the patio','We could do 7:45 on the heated patio.'],['Piccolo','no','Private event','We’re closed tonight for a private event.'],['Nonna Lina','wait','Calling back by 6','Let me ask my manager. Can we call you back by 6?'],['Via Luna','no','Can’t fit six','We can’t fit six tonight, sorry.']],
   decide:{q:'Lupa Rossa can seat six at 8:15, but wants a $50 card hold.',ok:'Held for 8:15',okLine:'Done, it’s held under Rosa.',no:'You passed on the hold'},
@@ -521,7 +521,7 @@ var SCENES={
   best:[['Lupa Rossa','Lupa Rossa is holding 8:15 for you.'],['Osteria Nove','Closest to 8: Osteria Nove at 8:00.'],['Cotta','Closest to 8: Cotta at 7:45, on the patio.'],['Casa Sole','Casa Sole has 8:30 for six.']],
   foot:function(s){return s.accepted?'Nothing else is booked without you.':'Nothing is booked until you choose.';}},
  movers:{working:'Calling 8 movers',
-  ask:'Hi, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed. Could you quote a two-bedroom move from Park Slope to Astoria on Saturday, October 12?',
+  ask:'Hi, I’m Rosa’s assistant. Could you quote a two-bedroom move from Park Slope to Astoria on Saturday, October 12?',
   thanks:'Perfect, thank you. I’ll pass that to Rosa.',
   nodes:[['Brownstone Movers','yes','$1,280 · Sat morning','About $1,280, and Saturday morning works.'],['Bridge & Borough','yes','$990 · video walkthrough','Around $990, after a quick video walkthrough.'],['Tiny Truck Co.','no','Booked that weekend','We’re booked solid that weekend.'],['Empire Move','needs','$1,150 · $100 deposit?','$1,150, and a $100 deposit holds your Saturday.'],['Astoria Haul','yes','$1,420 · Sunday only','We can do Sunday, about $1,420.'],['Lift & Carry','none','No answer',''],['Slope Movers','wait','Emailing a quote by 5','I’ll email Rosa a written quote by 5.'],['Metro Hands','yes','$1,060 · Sat afternoon','$1,060 for Saturday afternoon.']],
   decide:{q:'Empire Move quotes $1,150 and wants a $100 deposit to hold Saturday.',ok:'$1,150 · Saturday held',okLine:'Got it, Saturday is yours.',no:'You passed on the deposit'},
@@ -529,7 +529,7 @@ var SCENES={
   best:[['Bridge & Borough','Lowest: $990 from Bridge & Borough.'],['Metro Hands','Lowest: $1,060 from Metro Hands.'],['Empire Move','Empire Move is holding Saturday for $1,150.'],['Brownstone Movers','Lowest: $1,280 from Brownstone Movers.'],['Astoria Haul','Astoria Haul can do Sunday for $1,420.']],
   foot:function(){return 'Every quote is in the app, side by side.';}},
  vet:{working:'Calling 6 vets',
-  ask:'Hi, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed. Could Max, her beagle, be seen today? He’s been limping since this morning.',
+  ask:'Hi, I’m Rosa’s assistant. Could Max, her beagle, be seen today? He’s been limping since this morning.',
   thanks:'Thank you. I’ll let Rosa know right away.',
   nodes:[['Park Paws Vet','yes','Today, 4:40 PM','We can see Max today at 4:40.'],['Greenpoint Animal Clinic','no','Full today','We’re fully booked today, sorry.'],['Harbor Vet','wait','Nurse calls back in 30 min','Our nurse can call you back within 30 minutes.'],['Bark & Co.','no','Not taking new patients','We’re not taking new patients right now.'],['Brooklyn Pet ER','needs','Now · $150 deposit?','We can see him now. Walk-ins need a $150 deposit.'],['Cobble Hill Vet','yes','Tomorrow, 9:00 AM','First thing tomorrow, 9 AM.']],
   decide:{q:'Brooklyn Pet ER can see Max right now, with a $150 walk-in deposit.',ok:'Now · you OK’d $150',okLine:'Great, they’re expecting you.',no:'You passed on the deposit'},
@@ -537,7 +537,7 @@ var SCENES={
   best:[['Brooklyn Pet ER','Brooklyn Pet ER is expecting you now.'],['Park Paws Vet','Soonest: 4:40 PM today at Park Paws Vet.'],['Cobble Hill Vet','Soonest: 9:00 AM tomorrow at Cobble Hill Vet.']],
   foot:function(){return 'Nothing is booked until you choose.';}},
  stock:{working:'Calling 7 stores',
-  ask:'Hi, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed. Do you have the green trail runners from your window in a men’s 10?',
+  ask:'Hi, I’m Rosa’s assistant. Do you have the green trail runners from your window in a men’s 10?',
   thanks:'Amazing, thank you. I’ll tell Rosa.',
   nodes:[['Stride Shop','yes','Holding a pair till 6','Yes, one pair. I can hold it until 6.'],['Mile 26','no','Sold out','We just sold our last pair.'],['Run Club','yes','2 pairs in stock','We have two pairs in a 10.'],['Pace Setters','no','Only size 11','Only an 11 left, sorry.'],['Trail Head','none','No answer',''],['Second Wind','wait','Checking the back room','Let me check the back and call you back.'],['Sole Society','needs','Ship today · $12?','We can ship a pair to you today for $12.']],
   decide:{q:'Sole Society can ship a pair today for $12.',ok:'Shipping today · $12',okLine:'Done. It ships today.',no:'You passed on shipping'},
@@ -716,7 +716,7 @@ function pStart(){
  pReset();P.phase='ai';P.started=true;P.t0=performance.now();P.clock=setInterval(function(){pTime.textContent=' · '+fmt(performance.now()-P.t0);},250);
  pState('','Dialing…');pActions('ai');
  pLater(function(){pState('live','Live');},900);
- pLater(function(){pLine('Dahlia','Hey, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed.');},1000);
+ pLater(function(){pLine('Dahlia','Hi, I’m Rosa’s assistant.');},1000);
  pLater(function(){pLine('Casa Mia','Sure, what can I do for you?');},3900);
  pLater(function(){pLine('Dahlia','Do you have a table for six tonight, around 8?');},5300);
  pLater(function(){pLine('Casa Mia','We can do 8, but parties of six need a $60 card hold.');},7700);
