@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dahlia · The assistant that makes your calls</title>
+<meta name="description" content="Tell Dahlia what you need. It calls the restaurant, the salon or the plumber for you, and tells you exactly how it went.">
+<meta name="theme-color" content="#FBF6F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#160C15" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Dahlia · The assistant that makes your calls">
+<meta property="og:description" content="Tell Dahlia what you need. It makes the calls and tells you exactly how they went.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://letdahlia.com">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap">
+<style>
+/* Dahlia's app palette: a rosy canvas, plum ink and actions, magenta for
+   emphasis, peach from the petals. Dark mode is petals on plum, as in the app. */
+:root{
+ --canvas:#FBF6F4;--surface:#FFFFFF;--surface-muted:#F5EAE7;--line:#EEE0DD;
+ --ink:#2A1027;--muted:#6B5566;--faint:#8D7A88;
+ --plum:#340C32;--accent:#4A1745;--on-accent:#FFFFFF;
+ --magenta:#99275D;--bright:#C2417E;--peach:#FBC99B;--peach-tint:#FCEADC;
+ --live:#2E9C6E;--live-tint:#E3F3EB;--needs:#8C4A0A;--needs-tint:#FDEFDF;--done:#6E3582;--done-tint:#F2E7F5;--muted-tint:#F2EBEF;
+ --device:#1B0A19;--shadow:42,16,39;
+ --sans:"Geist",-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+ --serif:"Instrument Serif","Iowan Old Style",Georgia,serif;
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ color-scheme:dark;--canvas:#160C15;--surface:#221421;--surface-muted:#2E1C2B;--line:#3A2636;
+ --ink:#F7ECF2;--muted:#C4ADBC;--faint:#9C8595;--accent:#FBC99B;--on-accent:#340C32;
+ --magenta:#F0A2C5;--bright:#E0689F;--peach-tint:#3A2330;
+ --live:#5FD39F;--live-tint:#16301F;--needs:#F4BD7A;--needs-tint:#3A2814;--done:#D6A6E6;--done-tint:#33203A;--muted-tint:#2E2229;
+ --device:#0B0409;--shadow:0,0,0;}}
+:root[data-theme="dark"]{
+ color-scheme:dark;--canvas:#160C15;--surface:#221421;--surface-muted:#2E1C2B;--line:#3A2636;
+ --ink:#F7ECF2;--muted:#C4ADBC;--faint:#9C8595;--accent:#FBC99B;--on-accent:#340C32;
+ --magenta:#F0A2C5;--bright:#E0689F;--peach-tint:#3A2330;
+ --live:#5FD39F;--live-tint:#16301F;--needs:#F4BD7A;--needs-tint:#3A2814;--done:#D6A6E6;--done-tint:#33203A;--muted-tint:#2E2229;
+ --device:#0B0409;--shadow:0,0,0;}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--bright);outline-offset:3px;border-radius:8px}
+.wrap{width:100%;max-width:1160px;margin:0 auto;padding-inline:24px}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+.serif{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--magenta)}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.lede{font-size:clamp(18px,2.1vw,21px);line-height:1.5;color:var(--muted);max-width:34ch}
+
+/* Header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--canvas) 82%,transparent);backdrop-filter:saturate(170%) blur(18px);-webkit-backdrop-filter:saturate(170%) blur(18px);border-bottom:1px solid transparent;transition:border-color .2s}
+.top.scrolled{border-bottom-color:var(--line)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:20px;letter-spacing:-.02em}
+.brand img{width:32px;height:32px}
+.top nav{display:flex;gap:26px;margin-left:auto;font-size:15px;font-weight:500;color:var(--muted)}
+.top nav a{text-decoration:none;transition:color .15s}
+.top nav a:hover{color:var(--ink)}
+@media (max-width:760px){.top nav{display:none}.top .cta-small{margin-left:auto}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 22px;border-radius:16px;font:600 16px/1 var(--sans);text-decoration:none;border:0;cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1),background-color .15s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:0 10px 24px -12px rgba(var(--shadow),.55)}
+.btn-primary:hover{background:color-mix(in srgb,var(--accent) 88%,var(--bright))}
+.btn-quiet{background:var(--surface-muted);color:var(--ink)}
+.btn-quiet:hover{background:color-mix(in srgb,var(--surface-muted) 80%,var(--peach))}
+.cta-small{min-height:40px;padding:0 16px;border-radius:12px;font-size:14px}
+.store{background:#0A0508;color:#fff;border-radius:14px;min-height:56px;padding:0 20px 0 16px;gap:12px}
+:root[data-theme="dark"] .store{background:#FFFFFF;color:#0A0508}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .store{background:#FFFFFF;color:#0A0508}}
+.store svg{width:24px;height:24px;flex:none}
+.store span{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left}
+.store small{font-size:11px;font-weight:500;opacity:.78;letter-spacing:.01em}
+.store strong{font-size:18px;font-weight:600;letter-spacing:-.01em}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;padding-block:56px 96px}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto 45%;height:780px;background:radial-gradient(closest-side,color-mix(in srgb,var(--peach) 55%,transparent),transparent 70%);opacity:.55;pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:48px}
+.hero h1{font-size:clamp(46px,7.2vw,88px);line-height:.98;letter-spacing:-.045em;margin-block:18px 22px}
+.hero h1 .serif{display:block;font-size:1.08em;letter-spacing:-.02em;line-height:1}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.hero .fine{margin-top:18px;font-size:14px;color:var(--faint)}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:56px}.hero{padding-block:32px 72px}}
+
+/* Phone */
+.stage{position:relative;display:flex;justify-content:center}
+.phone{position:relative;width:330px;max-width:100%;aspect-ratio:9/19.2;border-radius:54px;background:var(--device);padding:11px;box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 50px 90px -40px rgba(var(--shadow),.55),0 24px 40px -24px rgba(var(--shadow),.35)}
+.screen{position:relative;height:100%;border-radius:44px;background:var(--canvas);overflow:hidden;display:flex;flex-direction:column}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:96px;height:28px;border-radius:20px;background:#000;z-index:3}
+.status{display:flex;justify-content:space-between;padding:16px 26px 0;font-size:13px;font-weight:600}
+.status i{font-style:normal;letter-spacing:.05em}
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;font-weight:700;font-size:17px}
+.appbar b{width:18px;height:2px;background:var(--ink);box-shadow:0 5px 0 var(--ink),0 -5px 0 var(--ink);border-radius:2px}
+.appbar em{font-style:normal;font-size:22px;font-weight:400;line-height:1}
+.chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:10px 16px 0;font-size:13.5px;line-height:1.42}
+.bubble{align-self:flex-end;max-width:84%;background:var(--surface-muted);padding:10px 13px;border-radius:17px}
+.reply{max-width:94%}
+.tree{position:relative;margin-top:2px;padding-left:10px}
+.tree h4{margin:0;font-size:14px;letter-spacing:-.01em}
+.tree .sub{font-size:11.5px;color:var(--faint);margin-bottom:10px}
+.sub+.branch::before{top:-6px}
+.branch{position:relative;display:flex;align-items:center;gap:10px;padding:7px 10px 7px 22px;border-radius:12px}
+.branch::before{content:"";position:absolute;left:0;top:-12px;bottom:50%;width:12px;border-left:1.5px solid var(--line);border-bottom:1.5px solid var(--line);border-bottom-left-radius:10px}
+.branch .dot{position:absolute;left:10px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--faint)}
+.branch.win .dot{background:var(--done)}.branch.live .dot{background:var(--live)}
+.branch.win{background:var(--done-tint)}
+.branch div{display:flex;flex-direction:column}
+.branch strong{font-size:13px}
+.branch span{font-size:11.5px;color:var(--muted)}
+.branch.live span{color:var(--live)}
+.branch.win::before,.branch.win~.branch::before{border-color:color-mix(in srgb,var(--done) 45%,var(--line))}
+.composer{margin:10px 12px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:var(--surface);border-radius:24px;padding:9px 9px 9px 16px;font-size:13px;color:var(--faint)}
+.composer span:last-child{width:28px;height:28px;border-radius:50%;background:var(--surface-muted);display:grid;place-items:center;color:var(--muted);font-size:14px}
+.tabbar{display:flex;justify-content:space-around;padding:8px 0 16px;border-top:1px solid var(--line);font-size:10px;color:var(--faint)}
+.tabbar span:first-child{color:var(--magenta);font-weight:600}
+
+/* Floating result card beside the phone */
+.float{position:absolute;right:-6px;bottom:15%;width:240px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px 16px;box-shadow:0 30px 60px -30px rgba(var(--shadow),.45);display:flex;flex-direction:column;gap:6px;font-size:13px}
+.float .pill{align-self:flex-start;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;background:var(--done-tint);color:var(--done)}
+.float strong{font-size:15px;letter-spacing:-.01em}
+.float dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px}
+.float dt{color:var(--faint);text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;padding-top:1px}
+.float dd{margin:0;font-variant-numeric:tabular-nums}
+.float-left{left:-96px;right:auto;top:15%;bottom:auto;width:208px;flex-direction:row;align-items:center;gap:10px;padding:10px 14px}
+.float-left img{width:30px;height:30px}
+.float-left span{display:flex;flex-direction:column;line-height:1.3}
+.float-left small{color:var(--live);font-weight:600;font-size:11px}
+@media (max-width:1060px){.float{right:-2px}.float-left{display:none}}
+@media (max-width:520px){.float{position:relative;right:auto;bottom:auto;width:100%;margin-top:-40px}.float-left{display:none}.stage{flex-direction:column;align-items:center}}
+
+/* Sections */
+section{padding-block:104px}
+.section-head{display:flex;flex-direction:column;gap:16px;max-width:680px;margin-bottom:56px}
+.section-head h2{font-size:clamp(34px,4.6vw,56px);line-height:1.02;letter-spacing:-.04em}
+.section-head p{font-size:19px;color:var(--muted);max-width:52ch}
+@media (max-width:760px){section{padding-block:76px}.section-head{margin-bottom:40px}}
+
+/* How it works */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:step}
+.step{display:flex;flex-direction:column;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:28px}
+.step h3{font-size:22px;letter-spacing:-.02em;display:flex;gap:12px;align-items:baseline}
+.step h3::before{counter-increment:step;content:counter(step);font-size:13px;font-weight:600;color:var(--magenta);background:var(--peach-tint);min-width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;transform:translateY(-3px)}
+.step p{color:var(--muted);font-size:16px}
+.vignette{margin-top:auto;background:var(--canvas);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;min-height:170px;justify-content:flex-end}
+.v-bubble{align-self:flex-end;background:var(--surface-muted);border-radius:16px;padding:9px 12px;max-width:92%}
+.v-mic{display:flex;align-items:center;gap:8px;color:var(--faint);font-size:12.5px}
+.v-mic i{display:flex;gap:3px;align-items:center;height:14px}
+.v-mic i b{width:3px;border-radius:2px;background:var(--bright);animation:wave 1.2s ease-in-out infinite}
+.v-mic i b:nth-child(1){height:6px}.v-mic i b:nth-child(2){height:12px;animation-delay:.15s}.v-mic i b:nth-child(3){height:8px;animation-delay:.3s}.v-mic i b:nth-child(4){height:13px;animation-delay:.45s}
+@keyframes wave{50%{transform:scaleY(.45)}}
+.v-plan{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.v-plan em{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--peach-tint);color:var(--magenta);font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+.v-plan span{display:flex;flex-direction:column;line-height:1.3}
+.v-plan small{color:var(--faint)}
+.v-confirm{display:flex;gap:8px}
+.v-confirm b{flex:1;text-align:center;padding:10px;border-radius:12px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:13px}
+.v-confirm i{font-style:normal;padding:10px 14px;border-radius:12px;background:var(--surface-muted);font-weight:600;font-size:13px}
+.v-line{display:flex;flex-direction:column;gap:3px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.v-line:last-child{border:0;padding:0}
+.v-line small{font-weight:600;color:var(--faint);font-size:11.5px;display:flex;justify-content:space-between}
+@media (max-width:900px){.steps{grid-template-columns:1fr}.vignette{min-height:0}}
+
+/* Honest by design */
+.trust{background:var(--plum);color:#F7ECF2;border-radius:40px;margin-inline:16px;padding-block:96px;position:relative;overflow:hidden}
+.trust .eyebrow{color:var(--peach)}
+.trust .section-head p{color:#D9C3D1}
+.trust .serif{color:var(--peach)}
+.trust .petals{position:absolute;right:-140px;top:-140px;width:460px;height:460px;opacity:.09;pointer-events:none}
+.trust-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+.call-card{background:#FBF6F4;color:#2A1027;border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+.call-head{display:flex;align-items:center;gap:10px}
+.call-head img{width:28px;height:28px}
+.call-head div{display:flex;flex-direction:column;line-height:1.25}
+.call-head small{font-size:11px;letter-spacing:.1em;color:#8D7A88;font-weight:600}
+.call-head strong{font-size:16px}
+.call-head .time{margin-left:auto;font-size:12px;color:#8D7A88;font-variant-numeric:tabular-nums}
+.caption{display:flex;flex-direction:column;gap:4px;padding-bottom:12px;border-bottom:1px solid #EEE0DD;font-size:15px}
+.caption small{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#8D7A88;font-variant-numeric:tabular-nums}
+.decision{background:#FDEFDF;border-left:3px solid #EFA044;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.decision strong{font-size:14px}
+.decision p{font-size:14px}
+.decision div{display:flex;gap:8px}
+.decision b{flex:1;text-align:center;padding:10px;border-radius:12px;background:#4A1745;color:#fff;font-size:13px}
+.decision i{flex:1;text-align:center;font-style:normal;font-weight:700;padding:10px;border-radius:12px;background:#F5EAE7;font-size:13px}
+.promises{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:26px}
+.promises li{display:grid;grid-template-columns:40px 1fr;gap:16px}
+.promises svg{width:40px;height:40px;padding:9px;border-radius:12px;background:rgba(251,201,155,.12);color:var(--peach)}
+.promises h3{font-size:19px;letter-spacing:-.015em;margin-bottom:4px;color:#fff}
+.promises p{color:#D9C3D1;font-size:16px}
+@media (max-width:900px){.trust-grid{grid-template-columns:1fr}.trust{margin-inline:8px;border-radius:30px;padding-block:72px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .trust{background:#240B22;border:1px solid #3A2636}}
+:root[data-theme="dark"] .trust{background:#240B22;border:1px solid #3A2636}
+
+/* Uses */
+.uses{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+.use{background:var(--surface);padding:28px;display:flex;flex-direction:column;gap:10px}
+.use svg{width:28px;height:28px;color:var(--magenta)}
+.use h3{font-size:19px;letter-spacing:-.015em}
+.use p{color:var(--muted);font-size:15.5px}
+.use q{display:block;margin-top:auto;padding-top:8px;font-size:14px;color:var(--faint);quotes:"“" "”"}
+@media (max-width:900px){.uses{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.uses{grid-template-columns:1fr}}
+
+/* Pricing */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:920px}
+.plan{border-radius:30px;padding:32px;display:flex;flex-direction:column;gap:20px;background:var(--surface);border:1px solid var(--line)}
+.plan.pro{background:linear-gradient(160deg,#4A1745 0%,#340C32 65%);color:#fff;border:0;position:relative;overflow:hidden}
+.plan.pro::after{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#99275D,#FBC99B)}
+.plan h3{font-size:22px;letter-spacing:-.02em}
+.price{display:flex;align-items:baseline;gap:8px}
+.price strong{font-size:52px;letter-spacing:-.04em;line-height:1}
+.price span{color:var(--muted);font-size:15px}
+.plan.pro .price span,.plan.pro .note{color:#D9C3D1}
+.plan ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;font-size:16px}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:10px}
+.plan li::before{content:"";width:20px;height:20px;border-radius:50%;margin-top:2px;background:var(--peach-tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.6 2.6L14 7.6' fill='none' stroke='%2399275D' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+.plan.pro li::before{background-color:rgba(251,201,155,.16);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.6 2.6L14 7.6' fill='none' stroke='%23FBC99B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.note{font-size:14px;color:var(--faint);margin-top:auto}
+@media (max-width:760px){.plans{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px}
+.faq .section-head{margin:0}
+details{border-bottom:1px solid var(--line)}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 2px;font-size:18px;font-weight:600;letter-spacing:-.01em}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";flex:none;width:12px;height:12px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);transform:rotate(45deg) translate(-3px,-3px);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+details[open] summary::after{transform:rotate(-135deg) translate(-3px,-3px)}
+details p{padding:0 2px 22px;color:var(--muted);max-width:62ch}
+@media (max-width:900px){.faq{grid-template-columns:1fr;gap:32px}}
+
+/* Final call to action */
+.final{text-align:center;padding-block:120px 110px}
+.final .mark{width:72px;height:72px;margin:0 auto 28px}
+.final h2{font-size:clamp(40px,6vw,76px);line-height:1;letter-spacing:-.045em;max-width:14ch;margin:0 auto}
+.final p{margin:22px auto 34px;color:var(--muted);font-size:19px;max-width:40ch}
+.final .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+
+/* Footer */
+footer{border-top:1px solid var(--line);padding-block:40px 48px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:22px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--ink)}
+footer .legal{flex-basis:100%;font-size:13px;color:var(--faint)}
+
+/* Motion: the flower breathes as in the app; live states pulse. */
+.spin{animation:spin 30s linear infinite;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--live) 55%,transparent)}60%{box-shadow:0 0 0 6px transparent}}
+.rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.16s}.rise.d3{animation-delay:.24s}
+@keyframes rise{from{transform:translateY(14px)}to{transform:none}}
+.reveal{transition:transform .8s cubic-bezier(.2,.8,.2,1),opacity .8s}
+.js .reveal.pending{transform:translateY(22px);opacity:.001}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.js .reveal.pending{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+ <div class="wrap">
+  <a class="brand" href="#" aria-label="Dahlia home"><img src="assets/dahlia-mark.svg" alt="" width="32" height="32">Dahlia</a>
+  <nav aria-label="Sections"><a href="#how">How it works</a><a href="#honest">Honest by design</a><a href="#pricing">Pricing</a><a href="#faq">Questions</a></nav>
+  <a class="btn btn-primary cta-small" href="#get" data-app-link>Get Dahlia</a>
+ </div>
+</header>
+
+<main>
+ <section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+   <div>
+    <span class="eyebrow rise">Your assistant for phone calls</span>
+    <h1 id="hero-title" class="rise d1">A little less <span class="serif">on your plate.</span></h1>
+    <p class="lede rise d2">Tell Dahlia what you need. It calls the restaurant, the salon or the plumber for you, and tells you exactly how it went.</p>
+    <div class="actions rise d3">
+     <a class="btn store" href="#get" data-app-link aria-label="Dahlia on the App Store">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.64c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.58-2.77-1.8-3.37-1.82-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.16-.05 1.6-.75 3.01-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.81-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.07 5.8c.64-.78 1.07-1.86.95-2.94-.92.04-2.04.61-2.7 1.39-.59.69-1.11 1.79-.97 2.85 1.03.08 2.07-.52 2.72-1.3z"/></svg>
+      <span><small data-store-small>Coming soon on the</small><strong>App Store</strong></span>
+     </a>
+     <a class="btn btn-quiet" href="#how">See how it works</a>
+    </div>
+    <p class="fine rise d3">3 tasks free · No card needed · For iPhone</p>
+   </div>
+
+   <div class="stage" aria-hidden="true">
+    <div class="phone">
+     <div class="screen">
+      <div class="island"></div>
+      <div class="status"><span>9:41</span><i>•••</i></div>
+      <div class="appbar"><b></b>Dahlia<em>+</em></div>
+      <div class="chat">
+       <div class="bubble">Find a table for 4 tonight at 7 in Park Slope</div>
+       <p class="reply">I’ll ask three moderately priced Italian spots. Nothing is booked until you confirm.</p>
+       <div class="tree">
+        <h4>Dinner for four, tonight</h4>
+        <div class="sub">AI calling · 3 calls at once</div>
+        <div class="branch win"><span class="dot"></span><div><strong>Luigi’s Trattoria</strong><span>Table booked for 7:30 PM</span></div></div>
+        <div class="branch"><span class="dot"></span><div><strong>Casa Nova</strong><span>Fully booked tonight</span></div></div>
+        <div class="branch live"><span class="dot pulse"></span><div><strong>Bella Cucina</strong><span>On the call now</span></div></div>
+       </div>
+      </div>
+      <div class="composer"><span>Message Dahlia</span><span>↑</span></div>
+      <div class="tabbar"><span>Conversation</span><span>Activity</span><span>Account</span></div>
+     </div>
+    </div>
+    <div class="float float-left"><img class="spin" src="assets/dahlia-mark.svg" alt=""><span><strong>Bella Cucina</strong><small>● Live · 0:42</small></span></div>
+    <div class="float">
+     <span class="pill">Done</span>
+     <strong>Table booked for 7:30 PM</strong>
+     <span style="color:var(--muted)">Luigi’s confirmed a table for four under Rosa.</span>
+     <dl><dt>Confirmation</dt><dd>4821</dd><dt>Next step</dt><dd>Arrive by 7:15 PM</dd></dl>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section id="how" aria-labelledby="how-title">
+  <div class="wrap">
+   <div class="section-head reveal">
+    <span class="eyebrow">How it works</span>
+    <h2 id="how-title">You say what you need. <span class="serif">Dahlia handles the phone.</span></h2>
+    <p>No hold music, no phone trees, no “can you call back later.” Just the answer, and what happens next.</p>
+   </div>
+   <div class="steps">
+    <article class="step reveal">
+     <h3>Tell Dahlia</h3>
+     <p>Type or speak it the way you’d ask a friend. Dahlia fills in the obvious and asks only what it truly needs.</p>
+     <div class="vignette" aria-hidden="true">
+      <div class="v-bubble">Get quotes to fix a leaky kitchen faucet this week</div>
+      <div class="v-mic"><i><b></b><b></b><b></b><b></b></i>Or just say it</div>
+     </div>
+    </article>
+    <article class="step reveal">
+     <h3>Review the plan</h3>
+     <p>See who Dahlia will call and why, swap anyone out, then confirm. Nothing is dialed until you say so.</p>
+     <div class="vignette" aria-hidden="true">
+      <div class="v-plan"><em>1</em><span><strong>Park Slope Plumbing</strong><small>Plumber · (718) 555-0142</small></span></div>
+      <div class="v-plan"><em>2</em><span><strong>Brownstone Pipe Co.</strong><small>Plumber · (718) 555-0187</small></span></div>
+      <div class="v-confirm"><b>Call 2 places</b><i>Not now</i></div>
+     </div>
+    </article>
+    <article class="step reveal">
+     <h3>Get the result</h3>
+     <p>Follow along with live captions, or put your phone away. You get what was agreed, any confirmation number and your next step.</p>
+     <div class="vignette" aria-hidden="true">
+      <div class="v-line"><small><span>Park Slope Plumbing</span><span>0:48</span></small>We can come Thursday morning, about $180 for the repair.</div>
+      <div class="v-line"><small><span>Dahlia</span><span>0:52</span></small>Thanks, I’ll pass that along.</div>
+     </div>
+    </article>
+   </div>
+  </div>
+ </section>
+
+ <section class="trust" id="honest" aria-labelledby="honest-title">
+  <svg class="petals spin" viewBox="0 0 100 100" fill="#FBC99B" aria-hidden="true"><path transform="rotate(0 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/><path transform="rotate(60 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/><path transform="rotate(120 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/><path transform="rotate(180 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/><path transform="rotate(240 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/><path transform="rotate(300 50 50)" d="M51.18 10.02C52.01 10.74 54.99 13.19 56.15 14.38C57.31 15.57 57.59 16.03 58.16 17.17C58.72 18.3 59.35 19.84 59.55 21.18C59.75 22.52 59.74 23.91 59.38 25.19C59.01 26.47 58.79 27.44 57.37 28.85C55.95 30.26 52.39 32.37 50.83 33.65C49.27 34.93 48.85 35.48 48.04 36.53C47.23 37.58 46.54 38.64 45.95 39.93C45.35 41.22 44.94 43.42 44.46 44.29C43.98 45.16 43.48 45.03 43.07 45.16C42.66 45.29 42.65 45.54 42.02 45.08C41.4 44.61 40.16 43.74 39.32 42.37C38.48 41.01 37.47 38.68 36.96 36.88C36.45 35.08 36.28 33.27 36.27 31.56C36.25 29.84 36.43 28.29 36.88 26.59C37.33 24.89 38.08 23 38.97 21.35C39.86 19.71 40.92 18.17 42.2 16.73C43.48 15.29 45.15 13.84 46.64 12.72C48.14 11.6 50.42 10.47 51.18 10.02Z"/></svg>
+  <div class="wrap">
+   <div class="section-head reveal">
+    <span class="eyebrow">Honest by design</span>
+    <h2 id="honest-title">Polite on the phone. <span class="serif">Always on your side.</span></h2>
+    <p>Dahlia speaks for you, never over you. Every call is open about what it is, and the important decisions stay yours.</p>
+   </div>
+   <div class="trust-grid">
+    <div class="call-card reveal" aria-label="Example of a live Dahlia call">
+     <div class="call-head"><img src="assets/dahlia-mark.svg" alt=""><div><small>AI CALL</small><strong>Trattoria Roma</strong></div><span class="time">0:04</span></div>
+     <div class="caption"><small><span>Dahlia</span><span>0:01</span></small>Hey, I’m Rosa’s assistant. This is an automated call, and it’s being transcribed.</div>
+     <div class="caption"><small><span>Trattoria Roma</span><span>0:03</span></small>We can seat you at 7, but we need a $20 deposit to hold the table.</div>
+     <div class="decision"><strong>Dahlia needs your decision</strong><p>They can seat you at 7:00 but need a $20 deposit. Accept?</p><div><b>Accept</b><i>Decline</i></div></div>
+    </div>
+    <ul class="promises">
+     <li class="reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 0 1 4 4v4a4 4 0 0 1-8 0V7a4 4 0 0 1 4-4z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><div><h3>It says it’s an assistant</h3><p>Every call starts by saying it’s automated and being transcribed. Asked if it’s human, Dahlia says it’s an AI assistant.</p></div></li>
+     <li class="reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><div><h3>Money waits for you</h3><p>Deposits, payments and bigger changes come to your screen to accept or decline. Nobody on the call can approve them for you.</p></div></li>
+     <li class="reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg><div><h3>Step in or hang up anytime</h3><p>End any call with one tap, or join it yourself with Dahlia Pro.</p></div></li>
+     <li class="reveal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg><div><h3>“No” means no</h3><p>Dahlia takes no for an answer, never pushes, and won’t call anyone who asks not to be called again.</p></div></li>
+    </ul>
+   </div>
+  </div>
+ </section>
+
+ <section id="uses" aria-labelledby="uses-title">
+  <div class="wrap">
+   <div class="section-head reveal">
+    <span class="eyebrow">What Dahlia can do</span>
+    <h2 id="uses-title">The calls you keep <span class="serif">putting off.</span></h2>
+   </div>
+   <div class="uses reveal">
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3v10M6 2v7M9 2v7a3 3 0 0 1-3 3M18 22V2c-2.8 1.4-4 4.2-4 7v5h4"/></svg><h3>Reservations</h3><p>Dahlia asks for your exact time first, and knows how far it can flex without checking with you.</p><q>A table for 4 at 7 tonight</q></article>
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9.4c-.5-.9-1.6-1.4-3-1.4-1.9 0-3 .9-3 2.1 0 2.8 6 1.4 6 4.3 0 1.3-1.3 2.1-3 2.1-1.5 0-2.6-.6-3.1-1.6M12 6v2M12 16v2"/></svg><h3>Quotes</h3><p>Ask several businesses at once and compare the answers side by side.</p><q>What would it cost to fix my faucet?</q></article>
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg><h3>Appointments</h3><p>Salons, barbers, clinics and more, booked around your schedule.</p><q>A haircut Saturday morning</q></article>
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6M6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 15v6M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 12h3a3 3 0 0 0 3-3V6M12 12a3 3 0 0 1 3 3v3"/></svg><h3>Several places at once</h3><p>Dahlia can call a few places in parallel, so the answer comes back in minutes, not an afternoon.</p><q>Who has a table tonight?</q></article>
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg><h3>People you know</h3><p>Pass a message along. Dahlia finds them in your contacts, on your phone, and checks with you first.</p><q>Tell Mom I’ll be 20 minutes late</q></article>
+    <article class="use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="3"/><path d="M9 7h.01M12 7h.01M15 7h.01M9 10.5h.01M12 10.5h.01M15 10.5h.01M9 14h.01M12 14h.01M15 14h.01"/></svg><h3>Menus and hold music</h3><p>“Press 2 for appointments” and long holds are Dahlia’s problem now, not yours.</p><q>Ask the clinic about Saturday hours</q></article>
+   </div>
+  </div>
+ </section>
+
+ <section id="pricing" aria-labelledby="pricing-title">
+  <div class="wrap">
+   <div class="section-head reveal">
+    <span class="eyebrow">Pricing</span>
+    <h2 id="pricing-title">Try it free. <span class="serif">Keep it if it helps.</span></h2>
+    <p>Your free tasks count only when Dahlia gets the job done. Calls that don’t work out are on us.</p>
+   </div>
+   <div class="plans">
+    <article class="plan reveal">
+     <h3>Free trial</h3>
+     <div class="price"><strong>$0</strong><span>for 7 days</span></div>
+     <ul><li>3 tasks, like a confirmed booking or an answered question</li><li>Up to 3 calls at the same time</li><li>Live transcripts and approvals</li><li>No card needed</li></ul>
+    </article>
+    <article class="plan pro reveal">
+     <h3>Dahlia Pro</h3>
+     <div class="price"><strong>$40</strong><span>per month, or $400 a year</span></div>
+     <ul><li>150 call minutes every month</li><li>Up to 10 calls at the same time</li><li>Join any live call yourself</li><li>Cancel anytime</li></ul>
+     <p class="note">Billed through the App Store. Prices in USD.</p>
+    </article>
+   </div>
+  </div>
+ </section>
+
+ <section id="faq" aria-labelledby="faq-title">
+  <div class="wrap faq">
+   <div class="section-head reveal">
+    <span class="eyebrow">Questions</span>
+    <h2 id="faq-title">Good to <span class="serif">know.</span></h2>
+    <p>Anything else? Write to <a href="mailto:team@letdahlia.com">team@letdahlia.com</a>.</p>
+   </div>
+   <div class="reveal">
+    <details><summary>Does Dahlia pretend to be me?</summary><p>No. Dahlia opens every call by saying it’s your assistant, that the call is automated and that it’s being transcribed. If anyone asks, it says it’s an AI assistant.</p></details>
+    <details><summary>Can it spend my money?</summary><p>No. If a business asks for a deposit, a payment or a bigger change than you allowed, Dahlia asks you on screen first, and you decide.</p></details>
+    <details><summary>Which numbers can it call?</summary><p>US and Canadian phone numbers. Dahlia won’t call emergency, premium or other restricted numbers. It is not an emergency service; for emergencies, call 911.</p></details>
+    <details><summary>What number do businesses see?</summary><p>A Dahlia number by default. You can verify your own number in the app so businesses can call you back directly.</p></details>
+    <details><summary>What happens to my information?</summary><p>Dahlia uses it only to handle your requests. It’s never sold, used for ads or used to train AI models, and you can delete your account and data anytime. See the <a href="https://api.letdahlia.com/privacy">Privacy Policy</a>.</p></details>
+   </div>
+  </div>
+ </section>
+
+ <section class="final" id="get" aria-labelledby="get-title">
+  <div class="wrap">
+   <img class="mark spin" src="assets/dahlia-mark.svg" alt="" width="72" height="72">
+   <h2 id="get-title">Hand off your next <span class="serif">phone call.</span></h2>
+   <p>Dahlia is coming to iPhone. Start with three free tasks, no card needed.</p>
+   <div class="actions">
+    <a class="btn store" href="#get" data-app-link aria-label="Dahlia on the App Store">
+     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.64c-.02-2.33 1.9-3.45 1.99-3.5-1.08-1.58-2.77-1.8-3.37-1.82-1.43-.15-2.8.84-3.53.84-.73 0-1.85-.82-3.04-.8-1.56.02-3 .91-3.81 2.31-1.62 2.82-.41 7 1.17 9.29.77 1.12 1.69 2.38 2.9 2.33 1.16-.05 1.6-.75 3.01-.75 1.4 0 1.8.75 3.03.73 1.25-.02 2.04-1.14 2.81-2.27.88-1.3 1.25-2.56 1.27-2.63-.03-.01-2.43-.93-2.45-3.7zM14.07 5.8c.64-.78 1.07-1.86.95-2.94-.92.04-2.04.61-2.7 1.39-.59.69-1.11 1.79-.97 2.85 1.03.08 2.07-.52 2.72-1.3z"/></svg>
+     <span><small data-store-small>Coming soon on the</small><strong>App Store</strong></span>
+    </a>
+   </div>
+  </div>
+ </section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <a class="brand" href="#" aria-label="Back to top"><img src="assets/dahlia-mark.svg" alt="" width="32" height="32">Dahlia</a>
+  <nav aria-label="Legal and support"><a href="https://api.letdahlia.com/support">Support</a><a href="https://api.letdahlia.com/privacy">Privacy</a><a href="https://api.letdahlia.com/terms">Terms</a><a href="mailto:team@letdahlia.com">team@letdahlia.com</a></nav>
+  <p class="legal">© 2026 Dahlia. Dahlia is not an emergency service.</p>
+ </div>
+</footer>
+
+<script>
+// When Dahlia is live, set APP_STORE_URL and every "Get Dahlia" button links
+// straight to the listing. Until then they lead to the launch note below.
+var APP_STORE_URL='';
+(function(){
+ var root=document.documentElement;root.classList.add('js');
+ if(APP_STORE_URL){
+  document.querySelectorAll('[data-app-link]').forEach(function(a){a.href=APP_STORE_URL;a.rel='noopener';});
+  document.querySelectorAll('[data-store-small]').forEach(function(s){s.textContent='Download on the';});
+ }
+ var top=document.getElementById('top');
+ var onScroll=function(){top.classList.toggle('scrolled',window.scrollY>8);};
+ onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+ // Sections settle in as they arrive; anything already in view stays put.
+ var items=[].slice.call(document.querySelectorAll('.reveal'));
+ if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ items.forEach(function(el){var r=el.getBoundingClientRect();if(r.top>innerHeight*0.92)el.classList.add('pending');});
+ var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('pending');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px'});
+ items.forEach(function(el){if(el.classList.contains('pending'))io.observe(el);});
+})();
+</script>
+</body>
+</html>
