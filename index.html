@@ -9,7 +9,12 @@
 <meta property="og:title" content="Dahlia · Ten calls at once. You’re still in charge.">
 <meta property="og:description" content="The AI calling assistant that makes your calls, and hands you the phone whenever you want it.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://letdahlia.com">
+<meta property="og:url" content="https://letdahlia.com/">
+<meta property="og:image" content="https://letdahlia.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://letdahlia.com/">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,6 +47,8 @@
  --peach-tint:#3A2330;--error:#F09AA3;--error-tint:#3D1A20;--shadow:0,0,0;}
 
 *{box-sizing:border-box}
+section[id]{scroll-margin-top:68px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--canvas);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 img,svg{display:block;max-width:100%}
@@ -391,9 +398,10 @@ footer .legal{flex-basis:100%;font-size:13px;color:var(--faint)}
        <svg class="petals" viewBox="0 0 100 100"><g fill="#FBC99B"><use href="#petal"/><use href="#petal" transform="rotate(60 50 50)"/><use href="#petal" transform="rotate(120 50 50)"/><use href="#petal" transform="rotate(180 50 50)"/><use href="#petal" transform="rotate(240 50 50)"/><use href="#petal" transform="rotate(300 50 50)"/></g></svg>
        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="5.31" fill="#99275D"/></svg>
       </div>
-      <div class="core-body" id="coreBody" aria-live="polite"></div>
+      <div class="core-body" id="coreBody"></div>
      </div>
      <ul class="nodes" id="nodes" aria-label="Calls"></ul>
+     <p class="sr" id="announce" aria-live="polite"></p>
     </div>
     <div class="listen" id="listen">
      <div class="who"><span><i></i><em id="lTag">Listen in</em></span><b id="lName">Tap any call</b><em id="lTime"></em></div>
@@ -543,6 +551,7 @@ var JIT=[.22,.86,.48,.12,.95,.4,.7,.3,.62,.05];
 
 var wires=$('#wires'),nodesEl=$('#nodes'),core=$('#core'),coreBody=$('#coreBody'),flower=$('#flower'),listen=$('#listen');
 var lTag=$('#lTag'),lName=$('#lName'),lTime=$('#lTime'),lCap=$('#lCap'),lJoin=$('#lJoin'),lEnd=$('#lEnd');
+var announce=$('#announce');function tell(s){announce.textContent=s;}
 var key='dinner',scene=SCENES[key],nodes=[],phase='idle',decision=null,sel=-1,pinned=false,t0=0,clock=null,shown='',started=false,accepted=false,followTimer=null;
 
 function build(){
@@ -577,7 +586,7 @@ function say(n,who,text){n.lines.push([who,text]);if(sel===n.i)renderListen();}
 
 function run(){
  if(phase!=='idle')build();
- phase='running';started=true;t0=performance.now();core.className='core running';
+ phase='running';started=true;t0=performance.now();core.className='core running';tell(scene.working+'.');
  coreBody.innerHTML='<h3>'+esc(scene.working)+'</h3><p class="meta"><span id="cTime">0:00</span> elapsed</p><p class="counts"><span><b id="cLive">0</b> on the line</span><span class="found"><b id="cFound">0</b> found</span></p>';
  clock=setInterval(tick,100);
  nodes.forEach(function(n){
@@ -602,7 +611,7 @@ function follow(){var next=nodes.filter(function(m){return m.state==='needs';})[
 function select(i){var prev=nodes[sel];if(prev)prev.el.classList.remove('sel');sel=i;nodes[i].el.classList.add('sel');shown='';renderListen();}
 
 function ask(n){
- phase='deciding';core.className='core running deciding';select(n.i);
+ phase='deciding';core.className='core running deciding';select(n.i);tell(n.name+' needs your decision. '+scene.decide.q);
  decision={n:n,timer:setTimeout(function(){resolve(false,true);},12000)};
  coreBody.innerHTML='<div class="decide" role="group" aria-label="Decision needed"><header><img src="assets/dahlia-mark.svg" alt="">Dahlia needs your decision</header><p>'+esc(scene.decide.q)+' Accept?</p><div class="btns"><button class="yes" type="button">Accept</button><button class="no" type="button">Decline</button></div><div class="bar"><i id="dBar"></i></div><small>Dahlia is holding the line. No answer means no.</small></div>';
  coreBody.querySelector('.yes').addEventListener('click',function(){resolve(true);});
@@ -621,6 +630,7 @@ function complete(){
  var done=nodes.filter(function(m){return m.state==='done';}),names=done.map(function(m){return m.name;});
  var bestEntry=scene.best.filter(function(b){return names.indexOf(b[0])>=0;})[0];
  var s={done:done.length,accepted:accepted,best:bestEntry?bestEntry[0]:'',time:fmt((performance.now()-t0)*SPEED).replace(':',' min ')+' s'};
+ tell(scene.head(s)+'. '+(bestEntry?bestEntry[1]:''));
  coreBody.innerHTML='<div class="summary"><h3>'+esc(scene.head(s))+'</h3><p>'+esc(bestEntry?bestEntry[1]:'Dahlia can try more places, or try again later.')+'</p><small>'+esc(scene.foot(s))+'</small><button class="go" type="button" id="again">Replay</button></div>';
  $('#again').addEventListener('click',function(){build();run();});
 }
